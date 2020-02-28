@@ -1,15 +1,13 @@
 import Vue from "nativescript-vue";
-
-import Home from "./components/Home";
+import Signin from "./components/Signin";
 
 new Vue({
-
     template: `
         <Frame>
-            <Home />
+            <Signin />
         </Frame>`,
 
     components: {
-        Home
+        Signin
     }
 }).$start();
