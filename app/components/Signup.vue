@@ -10,68 +10,128 @@
     <FlexboxLayout class="page">
       <StackLayout class="form">
         <Label class="header" text="Créer un compte" />
-
-        <StackLayout class="input-field" marginBottom="25">
-          <TextField
-            class="input"
-            hint="Email"
-            keyboardType="email"
-            autocorrect="false"
-            autocapitalizationType="none"
-            returnKeyType="next"
-            @returnPress="focusPassword"
-            fontSize="18"
-          />
-          <StackLayout class="hr-light" />
+        <Label class="text-error" :text="error"></Label>
+        <StackLayout marginBottom="25">
+          <TextField hint="Email" fontSize="18" v-model="mail" />
         </StackLayout>
-
-        <StackLayout class="input-field" marginBottom="25">
-          <TextField
-            ref="password"
-            class="input"
-            hint="Password"
-            secure="true"
-            :returnKeyType="isLoggingIn ? 'done' : 'next'"
-            @returnPress="focusConfirmPassword"
-            fontSize="18"
-          />
-          <StackLayout class="hr-light" />
+        <StackLayout marginBottom="25">
+          <TextField hint="Nom" fontSize="18" v-model="lastname" />
         </StackLayout>
-        <StackLayout class="input-field" marginBottom="25">
-          <TextField
-            ref="password2"
-            class="input"
-            hint="Confirm password"
-            secure="true"
-            :returnKeyType="isLoggingIn ? 'done' : 'next'"
-            @returnPress="focusConfirmPassword"
-            fontSize="18"
-          />
-          <StackLayout class="hr-light" />
+        <StackLayout marginBottom="25">
+          <TextField hint="Prénom" fontSize="18" v-model="firstname" />
         </StackLayout>
-        <Button
-          text="Créer son compte"
-          @tap="submit"
-          class="btn btn-primary m-t-20"
-        />
+        <StackLayout marginBottom="25">
+          <ListPicker :items="arrayGenre" v-model="genre" selectedIndex="0" />
+        </StackLayout>
+        <Button text="Créer son compte" @tap="submit" />
       </StackLayout>
     </FlexboxLayout>
   </Page>
 </template>
 
 <script>
+import axios from "axios";
 import Signin from "./Signin";
 export default {
   name: "Signup",
   components: {
     Signin
   },
+  data() {
+    return {
+      error: "",
+      arrayGenre: ["male", "female"],
+      mail: "",
+      lastname: "",
+      firstname: "",
+      genre: 0,
+      patternMail: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      patternNom: /[A-Z]+/,
+      mailPattern: false,
+      lastnamePattern: false,
+      firstnamePattern: false,
+      isValide: false
+    };
+  },
   methods: {
     goToSignin() {
       this.$navigateTo(Signin);
+    },
+    validateForm() {
+      this.mailPattern = this.patternMail.test(this.mail);
+      this.firstnamePattern = this.patternNom.test(this.firstname);
+      this.lastnamePattern = this.patternNom.test(this.lastname);
+      if (this.mailPattern && this.lastnamePattern && this.firstnamePattern) {
+        this.isValide = true;
+        this.error = "";
+      } else {
+        this.error = "Erreur dans le formulaire";
+        this.isValide = false;
+      }
+    },
+    submit() {
+      /*
+      let headers = new Headers();
+      headers.set('Authorization', 'Basic ' + base64.encode(username + ":" + password));
+*/
+
+      this.validateForm();
+      if (this.isValide) {
+        this.genre = this.genre == 0 ? "male" : "female";
+
+        console.log({
+          email: this.mail,
+          firstname: this.firstname,
+          lastname: this.lastname,
+          gender: this.genre
+        });
+
+        // fetch("https://api.todolist.sherpa.one/users/signup", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   data: JSON.stringify({
+        //     firstname: "Toi",
+        //     lastname: "dernier nom",
+        //     email: "tfdgomoi@email.com",
+        //     gender: "male"
+        //   })
+        // })
+        //   .then(response => response.json())
+        //   .then(json => console.log(json));
+
+        axios
+          .post({
+            url: "https://api.todolist.sherpa.one/users/signup",
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify({
+              email: this.mail,
+              firstname: this.firstname,
+              lastname: this.lastname,
+              gender: this.genre
+            })
+          })
+          .then(response => {
+            alert({
+              title: "Données de création du compte",
+              message: "Sauvegarder les données suivantes : " + response.json(),
+              okButtonText: "Ok"
+            });
+            console.log(response.json());
+          })
+          .catch(error => {
+            console.log(error.message);
+          });
+      }
     }
   }
 };
 </script>
 
-<style></style>
+<style>
+.text-error {
+  font-size: 20px;
+  text-align: center;
+  color: rgb(255, 0, 51);
+  font-weight: bold;
+}
+</style>

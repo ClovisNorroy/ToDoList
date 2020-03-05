@@ -11,15 +11,16 @@
 
 <script>
 import List from "./List";
+import axios from "axios";
 export default {
   components: {
     List
+  },
+  mounted(){
+    axios.get("https://api.todolist.sherpa.one/users/"+this.$store.state.user_uuid+"/todos/"+this.$store.state.todo_uuid{
+    })
   }
 };
 </script>
 
-<style scoped lang="scss">
-.menu {
-  background-color: #1b262c;
-}
-</style>
+<style scoped lang="scss"></style>

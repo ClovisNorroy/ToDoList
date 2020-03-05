@@ -3,43 +3,28 @@
     <FlexboxLayout class="page">
       <StackLayout class="form">
         <Label class="header" text="Se connecter" />
-
-        <StackLayout class="input-field" marginBottom="25">
+        <Label class="text-error" :text="error" />
+        <StackLayout marginBottom="25">
           <TextField
-            class="input"
             hint="Email"
             keyboardType="email"
-            autocorrect="false"
-            autocapitalizationType="none"
-            returnKeyType="next"
-            @returnPress="focusPassword"
             fontSize="18"
+            v-model="mail"
           />
-          <StackLayout class="hr-light" />
         </StackLayout>
 
-        <StackLayout class="input-field" marginBottom="25">
+        <StackLayout marginBottom="25">
           <TextField
             ref="password"
-            class="input"
             hint="Password"
-            secure="true"
-            :returnKeyType="isLoggingIn ? 'done' : 'next'"
-            @returnPress="focusConfirmPassword"
             fontSize="18"
+            secure="true"
+            v-model="password"
           />
-          <StackLayout class="hr-light" />
+          <StackLayout />
         </StackLayout>
-        <Button
-          text="Se connecter"
-          @tap="submit"
-          class="btn btn-primary m-t-20"
-        />
-        <Button
-          text="Créer un compte"
-          @tap="goToSignup"
-          class="btn btn-primary m-t-20"
-        />
+        <Button text="Se connecter" @tap="submit" />
+        <Button text="Créer un compte" @tap="goToSignup" />
       </StackLayout>
     </FlexboxLayout>
   </Page>
@@ -47,14 +32,43 @@
 
 <script>
 import Signup from "./Signup";
+import Home from "./Home";
 export default {
   components: {
-    Signup
+    Signup,
+    Home
+  },
+  data() {
+    return {
+      mail: "",
+      password: "",
+      error: ""
+    };
   },
   name: "Signin",
   methods: {
     goToSignup() {
       this.$navigateTo(Signup);
+    },
+    goToHome() {
+      this.$navigateTo(Home);
+    },
+    submit() {
+      axios
+        .post({
+          url: "https://api.todolist.sherpa.one/users/signin",
+          data: {
+            username: this.mail,
+            password: this.password
+          }
+        })
+        .then(response => {
+          this.error = "";
+          this.goToHome();
+        })
+        .catch(error => {
+          this.error = error.message;
+        });
     }
   }
 };
@@ -64,21 +78,23 @@ export default {
 .page {
   align-items: center;
 }
-
+.text-error {
+  font-size: 20px;
+  text-align: center;
+  color: rgb(255, 0, 51);
+  font-weight: bold;
+}
 .form {
-  margin-left: 30;
-  margin-right: 30;
   flex-grow: 1;
   vertical-align: middle;
 }
 
 .header {
-  horizontal-align: center;
   font-size: 25;
-  font-weight: 600;
-  margin-bottom: 70;
+  margin-bottom: 10%;
+  font-weight: 300;
   text-align: center;
-  color: #d51a1a;
+  color: #ffffff;
 }
 
 .input-field {
