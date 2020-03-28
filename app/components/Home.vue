@@ -17,7 +17,7 @@ export default {
     List
   },
   mounted(){
-    axios.get("https://api.todolist.sherpa.one/users/"+this.$store.state.user_uuid+"/todos/"+this.$store.state.todo_uuid{
+    axios.get("https://api.todolist.sherpa.one/users/"+this.$store.state.user_uuid+"/todos/"+this.$store.state.todo_uuid,{
     })
   }
 };
