@@ -4,6 +4,7 @@
       <StackLayout class="form">
         <Label class="header" text="Se connecter" />
         <Label class="text-error" :text="error" />
+        <Label class="text-error" :text="foo" />
         <StackLayout marginBottom="25">
           <TextField
             hint="Email"
@@ -33,6 +34,8 @@
 <script>
 import Signup from "./Signup";
 import Home from "./Home";
+import axios from "axios";
+import * as base64 from "base-64";
 export default {
   components: {
     Signup,
@@ -42,7 +45,8 @@ export default {
     return {
       mail: "",
       password: "",
-      error: ""
+      error: "",
+      foo: ""
     };
   },
   name: "Signin",
@@ -52,18 +56,17 @@ export default {
     },
     goToHome() {
       this.$navigateTo(Home);
-    },
+    },//https://stackoverflow.com/questions/44072750/how-to-send-basic-auth-with-axios
     submit() {
-      axios
-        .post({
+      console.log(base64.encode('alfred.lebutler@batcave.com:2zT6twR7KW'));
+      axios({
+        method: "POST",
           url: "https://api.todolist.sherpa.one/users/signin",
-          data: {
-            username: this.mail,
-            password: this.password
-          }
+        headers: { Authorization : "Basic "+base64.encode('alfred.lebutler@batcave.com:2zT6twR7KW')},
         })
         .then(response => {
           this.error = "";
+          console.log(JSON.stringify(response.data));
           this.goToHome();
         })
         .catch(error => {
@@ -73,7 +76,10 @@ export default {
   }
 };
 </script>
-
+// data : {
+//   username: "alfred.lebutler@batcave.com",
+//   password: "2zT6twR7KW"
+// },
 <style>
 .page {
   align-items: center;

@@ -20,9 +20,9 @@
         <StackLayout marginBottom="25">
           <TextField hint="Prénom" fontSize="18" v-model="firstname" />
         </StackLayout>
-        <StackLayout marginBottom="25">
-          <ListPicker :items="arrayGenre" v-model="genre" selectedIndex="0" />
-        </StackLayout>
+<!--        <StackLayout marginBottom="25">-->
+<!--          <ListPicker :items="arrayGenre" v-model="genre" selectedIndex="0" />-->
+<!--        </StackLayout>-->
         <Button text="Créer son compte" @tap="submit" />
       </StackLayout>
     </FlexboxLayout>
@@ -32,6 +32,7 @@
 <script>
 import axios from "axios";
 import Signin from "./Signin";
+import * as http from "http";
 export default {
   name: "Signup",
   components: {
@@ -70,6 +71,7 @@ export default {
       }
     },
     submit() {
+      console.log("MAJ3");
       /*
       let headers = new Headers();
       headers.set('Authorization', 'Basic ' + base64.encode(username + ":" + password));
@@ -77,14 +79,7 @@ export default {
 
       this.validateForm();
       if (this.isValide) {
-        this.genre = this.genre == 0 ? "male" : "female";
-
-        console.log({
-          email: this.mail,
-          firstname: this.firstname,
-          lastname: this.lastname,
-          gender: this.genre
-        });
+        this.genre = this.genre === 0 ? "male" : "female";
 
         // fetch("https://api.todolist.sherpa.one/users/signup", {
         //   method: "POST",
@@ -96,35 +91,32 @@ export default {
         //     gender: "male"
         //   })
         // })
-        //   .then(response => response.json())
+        //   .then(response => {
+        //     console.log(response);
+        //     response.json();
+        //   })
         //   .then(json => console.log(json));
 
-        axios
-          .post({
-            url: "https://api.todolist.sherpa.one/users/signup",
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify({
-              email: this.mail,
-              firstname: this.firstname,
-              lastname: this.lastname,
-              gender: this.genre
-            })
-          })
-          .then(response => {
-            alert({
-              title: "Données de création du compte",
-              message: "Sauvegarder les données suivantes : " + response.json(),
-              okButtonText: "Ok"
-            });
-            console.log(response.json());
-          })
-          .catch(error => {
-            console.log(error.message);
-          });
+
+        axios({
+          method: "POST",
+          url: "https://api.todolist.sherpa.one/users/signup",
+          //headers: { "Content-Type": "application/json" },
+          data: {
+            email: this.mail,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            gender: "male"
+          }
+        }).then(response => {
+          console.log(response.data);
+        }).catch(error => {
+          console.log(error.response.request.response);
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style>
