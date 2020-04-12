@@ -71,47 +71,24 @@ export default {
       }
     },
     submit() {
-      console.log("MAJ3");
-      /*
-      let headers = new Headers();
-      headers.set('Authorization', 'Basic ' + base64.encode(username + ":" + password));
-*/
-
       this.validateForm();
       if (this.isValide) {
         this.genre = this.genre === 0 ? "male" : "female";
 
-        // fetch("https://api.todolist.sherpa.one/users/signup", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   data: JSON.stringify({
-        //     firstname: "Toi",
-        //     lastname: "dernier nom",
-        //     email: "tfdgomoi@email.com",
-        //     gender: "male"
-        //   })
-        // })
-        //   .then(response => {
-        //     console.log(response);
-        //     response.json();
-        //   })
-        //   .then(json => console.log(json));
-
-
         axios({
           method: "POST",
           url: "https://api.todolist.sherpa.one/users/signup",
-          //headers: { "Content-Type": "application/json" },
           data: {
             email: this.mail,
             firstname: this.firstname,
             lastname: this.lastname,
-            gender: "male"
+            gender: "male" //ListPicker not working
           }
         }).then(response => {
-          console.log(response.data);
+          alert("Compte créé, veuillez noter votre\nmot de passe :\n"+response.data.password);
+          this.goToSignin();
         }).catch(error => {
-          console.log(error.response.request.response);
+          alert(error.response.request.response.error_description);
         })
       }
     }

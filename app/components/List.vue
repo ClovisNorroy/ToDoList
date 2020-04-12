@@ -1,12 +1,15 @@
 <template>
+  <Page>
   <StackLayout>
-    <Button class="sort" text="Ajouter une tâche" @tap="addTodo" />
+    <Button class="ajout" text="Ajouter une tâche" @tap="addTodo" />
+    <Button class="ajout" text="Tester ajout Todo" @tap="save" />
     <SegmentedBar v-model="filter">
       <SegmentedBarItem title="Tous" />
       <SegmentedBarItem title="Fait" />
       <SegmentedBarItem title="Pas encore fait" />
     </SegmentedBar>
-    <ListView for="todo in filter_todos" @itemTap="onTap" class="listView">
+<!--    <ListView for="todo in filter_todos" @itemTap="onTap" class="listView">-->
+      <ListView for="todo in $store.state.data" @itemTap="onTap" class="listView">
       <v-template class="itemView">
         <StackLayout>
           <Label>
@@ -19,7 +22,9 @@
       </v-template>
     </ListView>
   </StackLayout>
+  </Page>
 </template>
+
 
 <script>
 import Detail from "./Detail";
@@ -31,92 +36,49 @@ export default {
   },
   data() {
     return {
-      // arrayTodo: [
-      //   {
-      //     content: " Faire la To do List",
-      //     done: true
-      //   },
-      //   {
-      //     content: " Faire du vueJs",
-      //     done: false
-      //   },
-      //   {
-      //     content: " Faire à manger",
-      //     done: false
-      //   },
-      //   {
-      //     content: " Faire du PHP",
-      //     done: false
-      //   },
-      //   {
-      //     content: " Faire un portfolio en anglais",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 1",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 2",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 3",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 4",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 5",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 6",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 7",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 8",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 9",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 10",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 11",
-      //     done: false
-      //   },
-      //   {
-      //     content: " To do list exemple 12",
-      //     done: true
-      //   },
-      //   {
-      //     content: " To do list exemple 53",
-      //     done: true
-      //   },
-      //   {
-      //     content: " FF 15 PLS",
-      //     done: true
-      //   },
-      //   {
-      //     content: " Go next",
-      //     done: true
-      //   }
-      // ],
+      arrayTodo: [
+        {
+          content: " Faire la To do List",
+          done: true
+        },
+        {
+          content: " Faire du vueJs",
+          done: false
+        },
+        {
+          content: " Faire à manger",
+          done: false
+        },
+        {
+          content: " Faire du PHP",
+          done: false
+        },
+        {
+          content: " Faire un portfolio en anglais",
+          done: false
+        },
+        {
+          content: " FF 15 PLS",
+          done: true
+        },
+        {
+          content: " Go next",
+          done: true
+        }
+      ],
+      input: {
+        content: "Test Todo"
+      },
       filter: 0
     };
   },
   methods: {
+    save(){
+      this.$store.dispatch("insertTest", this.input);
+    },
+    load(){
+      this.$store.dispatch("queryTest")
+    },
     colorDone(done) {
       return done ? "text-green" : "text-red";
     },
@@ -136,16 +98,22 @@ export default {
         this.$store.state.todos.unshift({ content: result.text, done: false });
         console.log(`Dialog result: ${result.result}, text: ${result.text}`);
       });
+    },
+    addTodoTester(){
+
+    },
+    deleteTodo(item) {
+      let i = 0;
+      this.arrayDisplay.forEach((element, index) => {
+        if (element.content == item) {
+          i = index;
+        }
+      });
+      this.arrayDisplay.splice(i, 1);
     }
-    // deleteTodo(item) {
-    //   let i = 0;
-    //   this.arrayDisplay.forEach((element, index) => {
-    //     if (element.content == item) {
-    //       i = index;
-    //     }
-    //   });
-    //   this.arrayDisplay.splice(i, 1);
-    // }
+  },
+  mounted(){
+    this.load();
   },
   computed: {
     filter_todos: function() {
@@ -158,9 +126,6 @@ export default {
       }
     }
   }
-  // mounted() {
-  //   this.arrayDisplay = this.arrayTodo;
-  // }
 };
 </script>
 
@@ -177,4 +142,8 @@ export default {
 .text-green {
   color: #21bf73;
 }
+  .ajout{
+    background-color: #282a36;
+    color: #f8f8f2;
+  }
 </style>

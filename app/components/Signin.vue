@@ -36,6 +36,8 @@ import Signup from "./Signup";
 import Home from "./Home";
 import axios from "axios";
 import * as base64 from "base-64";
+import List from "./List";
+
 export default {
   components: {
     Signup,
@@ -46,7 +48,7 @@ export default {
       mail: "",
       password: "",
       error: "",
-      foo: ""
+      toDoList: null
     };
   },
   name: "Signin",
@@ -56,30 +58,31 @@ export default {
     },
     goToHome() {
       this.$navigateTo(Home);
-    },//https://stackoverflow.com/questions/44072750/how-to-send-basic-auth-with-axios
+    },
     submit() {
-      console.log(base64.encode('alfred.lebutler@batcave.com:2zT6twR7KW'));
       axios({
         method: "POST",
           url: "https://api.todolist.sherpa.one/users/signin",
-        headers: { Authorization : "Basic "+base64.encode('alfred.lebutler@batcave.com:2zT6twR7KW')},
+        headers: { Authorization : "Basic "+base64.encode(this.mail+":"+this.password)},
         })
         .then(response => {
           this.error = "";
+          this.$store.state.token = response.data.token;
+          this.$store.state.uuid = response.data.user.uuid;
           console.log(JSON.stringify(response.data));
-          this.goToHome();
+          this.$navigateTo(List);
         })
         .catch(error => {
+          console.log(this.mail+":"+this.password);
+          console.log("Basic "+base64.encode(this.mail+":"+this.password));
+          console.log(error.message);
           this.error = error.message;
         });
     }
   }
 };
 </script>
-// data : {
-//   username: "alfred.lebutler@batcave.com",
-//   password: "2zT6twR7KW"
-// },
+
 <style>
 .page {
   align-items: center;
