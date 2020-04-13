@@ -3,6 +3,8 @@
     <ActionBar title="ToDoList" class="menu">
       <StackLayout orientation="horizontal">
         <Label text="To Do List" fontSize="24" verticalAlignment="center" />
+        <Button  text="SIGNUP" @tap="goToSignup" />
+        <Button  text="SIGNIN" @tap="goToSignin" />
       </StackLayout>
     </ActionBar>
     <List />

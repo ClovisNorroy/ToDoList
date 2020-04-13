@@ -64,12 +64,28 @@ const store = new Vuex.Store({
         },
         saveTest(state, toDo){
             state.data.push({
-                id: toDo.data.id,
-                content: toDo.data.content,
-                done: toDo.data.done
+                id: toDo.id,
+                content: toDo.content,
+                done: toDo.done
                 // firstname: data.data.firstname,
                 // lastname: data.data.lastname
             });
+        },
+        updateDone(state, toDo){
+            state.data.map(element => {
+              if (element.id === toDo.id) {
+                  element.done = toDo.done;
+              }
+              return element;
+          });
+            //state.data.forEach(data => {console.log(data.id," ", data.done)});
+        },
+        deleteToDo(state, toDoId){
+            state.data.forEach((toDo, index)=>{
+                if(toDo.id === toDoId){
+                    state.data.splice(index, 1);
+                }
+            })
         },
         reset(state){
             state.data = [];
@@ -116,14 +132,23 @@ const store = new Vuex.Store({
                 console.log("INSERT ERROR", error);
             });
         },
-        insertTest(context, data) {
-            context.state.database.execSQL("INSERT INTO todotest (content, done) VALUES (?, ?)",
-                [data.content, 1]).then(id => {
-                context.commit("saveTest", { data: data });
+        insertNewToDo(context, data) {
+            context.state.database.execSQL("INSERT INTO todotest (content, done) VALUES (?, 0)",
+                [data]).then(id => {
+                context.commit("saveTest", { content : data, id: id, done: 0 });
                 console.log(data.value, "\ninserted with id : ", id)
             }, error => {
                 console.log("INSERT ERROR", error);
             });
+        },
+        updateDone(context, data){
+            context.state.database.execSQL("UPDATE todotest SET done = ? WHERE id = ?",
+                [data.done, data.id]
+            ).then(id=> {
+                console.log(data.id);
+                context.commit("updateDone", data);
+            }).catch(error => console.log("UPDATE ERROR : ",error)
+        )
         },
         query(context) { //https://www.nativescript.org/blog/data-management-with-sqlite-and-vuex-in-a-nativescript-vue-app
             context.state.database.all("SELECT id, content, done, type, media_url, _id, updated FROM toDos", []).then(result => {
@@ -138,6 +163,13 @@ const store = new Vuex.Store({
             }, error => {
                 console.log("SELECT ERROR", error);
             });
+        },
+        deleteToDo(context, toDoId){
+            context.state.database.execSQL("DELETE FROM todotest WHERE id = ?", [toDoId]).then(id =>{
+            console.log("object with id '"+id+"' deleted");
+            }).catch(error=>{
+                console.log("DELETE ERROR : ", error);
+            })
         },
         sync(context, data){
             context.state.database.execSQL("DELETE FROM toDos").then(()=>{

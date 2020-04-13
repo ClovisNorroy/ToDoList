@@ -15,9 +15,9 @@
           <Label>
             <Span :text="todo.content" fontSize="18" :class="colorDone(todo.done)" />
           </Label>
-          <StackLayout v-if="todo.done">
-            <Button class="sort" text="X" @tap="deleteTodo(todo.content)" fontSize="20" />
-          </StackLayout>
+<!--          <StackLayout v-if="todo.done">-->
+<!--            <Button class="ajout" text="Supprimer" @tap="deleteTodo(todo.content)" fontSize="20" />-->
+<!--          </StackLayout>-->
         </StackLayout>
       </v-template>
     </ListView>
@@ -67,7 +67,7 @@ export default {
         }
       ],
       input: {
-        content: "Test Todo"
+        content: ""
       },
       filter: 0
     };
@@ -80,40 +80,30 @@ export default {
       this.$store.dispatch("queryTest")
     },
     colorDone(done) {
-      return done ? "text-green" : "text-red";
+      return done === 0 ? "text-green" : "text-red";
     },
     onTap(event) {
-      //console.log(event.index);
+      //console.log(event.item);
+      event.item.done = event.item.done === 0 ;
       this.$navigateTo(Detail, { props: { item: event.item } });
     },
     addTodo() {
       const dialogs = require("tns-core-modules/ui/dialogs");
       prompt({
-        title: "Ajout d'un item",
+        title: "Ajout d'un toDo",
         message: "Intitulé de l'item",
         okButtonText: "OK",
         cancelButtonText: "Cancel",
         inputType: dialogs.inputType.text
       }).then(result => {
-        this.$store.state.todos.unshift({ content: result.text, done: false });
-        console.log(`Dialog result: ${result.result}, text: ${result.text}`);
+        this.$store.dispatch("insertNewToDo", result.text);
       });
     },
-    addTodoTester(){
-
-    },
-    deleteTodo(item) {
-      let i = 0;
-      this.arrayDisplay.forEach((element, index) => {
-        if (element.content == item) {
-          i = index;
-        }
-      });
-      this.arrayDisplay.splice(i, 1);
-    }
   },
   mounted(){
     this.load();
+    this.$store.state.data.forEach(element=>
+    console.log(element.id))
   },
   computed: {
     filter_todos: function() {
@@ -134,6 +124,7 @@ export default {
   background-color: #263859;
 }
 .listView {
+  height: auto;
   background-color: #263859;
 }
 .text-red {
